@@ -20,12 +20,12 @@ class Storage:
     query_count = 0
 
     @classmethod
-    def add_forecast(cls, forecast: WeatherData):
+    def add_forecast(cls, forecast: WeatherData) -> None:
         cls.history.append(forecast)
         cls.query_count += 1
 
     @classmethod
-    def show_last_n(cls):
+    def show_last_n_queries(cls) -> None:
         if cls.query_count == 0:
             return print("История пуста")
         while True:
@@ -47,7 +47,7 @@ class Storage:
                 break
 
 
-def main():
+def main() -> None:
     menu()
     while True:
         action = choose_action()
@@ -55,7 +55,7 @@ def main():
             break
 
 
-def menu():
+def menu() -> None:
     print(f"""
         {Actions.close_app.value} - Выйти
         {Actions.get_forecast_by_ip.value} - Погода в вашем городе
@@ -63,9 +63,9 @@ def menu():
         {Actions.get_history.value} - История запросов""")
 
 
-def choose_action():
+def choose_action() -> int | None:
     try:
-        status = int(input(f"Выберите действие ({Actions.show_menu.value} для просмотра команд): "))
+        status = int(input(f"Выберите действие ({Actions.show_menu.value} - меню команд): "))
     except ValueError:
         print("Поле ввода должно содержать только цифры!")
     else:
@@ -80,7 +80,7 @@ def choose_action():
             get_forecast(get_city_name())
 
         elif status == Actions.get_history.value:
-            Storage.show_last_n()
+            Storage.show_last_n_queries()
 
         elif status == Actions.show_menu.value:
             menu()
@@ -94,11 +94,11 @@ def get_ip_location() -> str:
     return response["city"]
 
 
-def get_city_name():
+def get_city_name() -> str:
     return input("Введите название города: ")
 
 
-def get_forecast(city_name):
+def get_forecast(city_name: str) -> None:
     try:
         weather_data = get_weather_data(city_name)
         print_weather_info(weather_data)
@@ -108,7 +108,7 @@ def get_forecast(city_name):
         print(f"Случилось что-то неладное: {e}.")
 
 
-def get_weather_data(city_name):
+def get_weather_data(city_name: str) -> WeatherData:
     params = {
         "q": city_name,
         "APPID": "158a57a9df031a35e520c959cd1607d1",
@@ -128,12 +128,12 @@ def get_weather_data(city_name):
     return data
 
 
-def get_current_time(shift):
+def get_current_time(shift: int) -> str:
     date = datetime.now(tz=timezone(timedelta(seconds=shift))).strftime("%Y-%m-%d %H:%M:%S%Z")
     return date.replace("UTC", "")
 
 
-def print_weather_info(weather):
+def print_weather_info(weather: WeatherData) -> None:
     print(f"""
     Текущее время: {weather.time}
     Название города: {weather.name}
