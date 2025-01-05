@@ -1,8 +1,11 @@
 import requests
+import os
+from dotenv import load_dotenv
 from enum import Enum
 from collections import namedtuple
 from datetime import datetime, timedelta, timezone
 
+load_dotenv()
 
 class Actions(Enum):
 
@@ -111,7 +114,7 @@ def get_forecast(city_name: str) -> None:
 def get_weather_data(city_name: str) -> WeatherData:
     params = {
         "q": city_name,
-        "APPID": "158a57a9df031a35e520c959cd1607d1",
+        "APPID": os.getenv("OpenWeatherMap_KEY"),
         "units": "metric",
         "lang": "ru"
     }
