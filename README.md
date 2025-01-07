@@ -50,7 +50,14 @@ git clone https://github.com/cheeeeeeeel/weather_forecast
 pip install -r requirements.txt
 ```
 
-3. И наконец запустить приложение.
+3. Создайте файл с названием ".env" в директории проекта. В нём создайте константу с названием "OpenWeatherMap_KEY" 
+и присвойте ей значение вашего API ключа, который вы можете получить на [сайте сервиса](https://openweathermap.org/api) после регистрации.
+
+```
+OpenWeatherMap_KEY = "ваш ключ для API"
+```
+
+4. И наконец запустить приложение.
 
 ```
 python -m weather_forecast

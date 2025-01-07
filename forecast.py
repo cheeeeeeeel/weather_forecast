@@ -45,7 +45,8 @@ class Storage:
                     "или не является положительным."
                 )
             else:
-                for query in cls.history[-n::]:
+                for ind, query in enumerate(cls.history[:-n-1:-1], start=1):
+                    print(f"\n{ind}.")
                     print_weather_info(query)
                 break
 
@@ -60,10 +61,11 @@ def main() -> None:
 
 def menu() -> None:
     print(f"""
-        {Actions.close_app.value} - Выйти
-        {Actions.get_forecast_by_ip.value} - Погода в вашем городе
-        {Actions.get_forecast_by_city.value} - Погода в указанном городе
-        {Actions.get_history.value} - История запросов""")
+{Actions.close_app.value} - Выйти
+{Actions.get_forecast_by_ip.value} - Погода в вашем городе
+{Actions.get_forecast_by_city.value} - Погода в указанном городе
+{Actions.get_history.value} - История запросов
+""")
 
 
 def choose_action() -> int | None:
@@ -138,12 +140,13 @@ def get_current_time(shift: int) -> str:
 
 def print_weather_info(weather: WeatherData) -> None:
     print(f"""
-    Текущее время: {weather.time}
-    Название города: {weather.name}
-    Погодные условия: {weather.conditions}
-    Текущая температура: {weather.temperature} градусов по цельсию
-    Ощущается как: {weather.feels_like} градусов по цельсию
-    Скорость ветра: {weather.wind} м/c""")
+Текущее время: {weather.time}
+Название города: {weather.name}
+Погодные условия: {weather.conditions}
+Текущая температура: {weather.temperature} градусов по цельсию
+Ощущается как: {weather.feels_like} градусов по цельсию
+Скорость ветра: {weather.wind} м/c
+""")
 
 
 if __name__ == "__main__":
