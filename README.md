@@ -58,7 +58,7 @@ pip install -r requirements.txt
 OpenWeatherMap_KEY = "ваш ключ для API"
 ```
 
-4. И наконец запустить приложение.
+4. И наконец запустить приложение. Если не работает с "python", попробуйте "py" или "python3".
 
 ```
 python -m forecast
