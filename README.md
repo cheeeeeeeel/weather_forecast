@@ -61,7 +61,7 @@ OpenWeatherMap_KEY = "ваш ключ для API"
 4. И наконец запустить приложение.
 
 ```
-python -m weather_forecast
+python -m forecast
 ```
 
 ### Приятного использования!
