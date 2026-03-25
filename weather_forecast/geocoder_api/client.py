@@ -1,25 +1,24 @@
 import random
 import time
-from typing import Callable
-from requests import Response
 import requests
 
 from weather_forecast.models import Coordinates
 from weather_forecast.exceptions import InvalidApiResponseError, NetworkError, RequestError
 from .config import API_KEY, API_BASE_URL
+from requests import Response
 
 
 
 class HttpRequest:
 
-    def __init__(self, max_retries=3, delay=3):
+    def __init__(self, max_retries: int, delay: int):
         self._max_retries = max_retries
         self._delay = delay
 
-    def get(self, request: Callable[..., Response], *args, **kwargs):
+    def get(self, *args, **kwargs) -> Response | None:
         for attempt in range(1, self._max_retries + 1):
             try:
-                response = request(*args, **kwargs)
+                response = requests.get(*args, **kwargs)
                 response.raise_for_status()
                 return response
 
@@ -42,13 +41,13 @@ FORMAT = "json"
 
 class GeocoderClient:
 
-    def __init__(self, session: requests.Session | None = None, retry: HttpRequest | None = None,
-                 base_url = API_BASE_URL, key = API_KEY, timeout=10):
+    def __init__(self, session: requests.Session | None = None,
+                 max_retries: int = 3, delay: int = 3, timeout: int = 10):
+        self._base_url = API_BASE_URL
+        self._key = API_KEY
         self._own_session_flag = session is None
         self._session = session or requests.Session()
-        self._request = retry or HttpRequest()
-        self._base_url = base_url
-        self._key = key
+        self._request = HttpRequest(max_retries, delay)
         self._timeout = timeout
 
     def __enter__(self):
@@ -63,14 +62,14 @@ class GeocoderClient:
         data = self._validate_response(response)
         return self._parse_coords(data)
 
-    def _get(self, city: str) -> Response:
+    def _get(self, city: str) -> Response | None:
         payload = {
             "apikey": self._key,
             "geocode": city,
             "lang": LANG,
             "format": FORMAT,
         }
-        response = self._request.get(self._session.get, self._base_url, params=payload, timeout=self._timeout)
+        response = self._request.get(self._base_url, params=payload, timeout=self._timeout)
         return response
 
     def _validate_response(self, response: Response) -> dict:
