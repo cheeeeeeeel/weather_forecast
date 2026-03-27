@@ -1,11 +1,11 @@
 
 import requests
-from datetime import datetime
-
-from new_forecast.weather_api.config import API_KEY, API_BASE_URL
-from new_forecast.models import WeatherData, Coordinates
-from new_forecast.exceptions import InvalidApiResponseError
-from new_forecast.geocoder_api.client import HttpRequest
+from new_forecast.core import (
+config,
+HttpRequest,
+InvalidApiResponseError,
+Coordinates, WeatherData
+)
 from requests.models import Response
 
 
@@ -14,8 +14,8 @@ LANG = "ru"
 class WeatherClient:
     def __init__(self, session: requests.Session | None = None,
                  max_retries: int = 3, delay: int = 3,timeout=10):
-        self._key = API_KEY
-        self._base_url = API_BASE_URL
+        self._key = config.weather.api_key
+        self._base_url = config.weather.base_url
         self._request = HttpRequest(max_retries, delay)
         self._own_session_flag = session is None
         self._session = session or requests.Session()
@@ -28,7 +28,7 @@ class WeatherClient:
         if self._own_session_flag:
             self._session.close()
 
-    def _get_data_by_coords(self, coords) -> Response | None:
+    def _get_data_by_coords(self, coords) -> Response:
         """Принимет не название города, а ширину и долготу"""
         payload = {
             "lat": coords.lat,
@@ -48,12 +48,21 @@ class WeatherClient:
         except ValueError as e:
             raise InvalidApiResponseError("Формат ответа от АПИ погоды не соответствует ожидаемому.") from e
 
-    def _parser(self, data):
+    def _parser(self, data: dict) -> WeatherData:
         try:
-            time = datetime.time
+            data = data["data"][0]
+            weather = WeatherData(
+                tz_iana = data["timezone"],
+                city_en=data["city_name"],
+                wind_speed=data["wind_spd"],
+                weather_condition=data["weather"]["description"],
+                temperature=data["temp"],
+                temp_feels_like=data["app_temp"],
+            )
+            return weather
         except (LookupError, TypeError) as e:
             raise InvalidApiResponseError(
-                f"Ошибка в парсинге координат. Возможно структура ответа обрабатывается некорректо или изменилась. \n {e}"
+                f"Ошибка в парсинге данных о погоде. Возможно структура ответа обрабатывается некорректо или изменилась. \n {e}"
             ) from e
 
     def get_weather_data(self, coords: Coordinates) -> WeatherData:
