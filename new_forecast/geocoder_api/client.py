@@ -2,9 +2,9 @@ import random
 import time
 import requests
 
-from weather_forecast.models import Coordinates
-from weather_forecast.exceptions import InvalidApiResponseError, NetworkError, RequestError
-from .config import API_KEY, API_BASE_URL
+from new_forecast.models import Coordinates
+from new_forecast.exceptions import InvalidApiResponseError, NetworkError, RequestError
+from new_forecast.geocoder_api.config import API_KEY, API_BASE_URL
 from requests import Response
 
 
